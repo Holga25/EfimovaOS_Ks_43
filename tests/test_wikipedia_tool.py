@@ -20,6 +20,7 @@ class TestWikipediaTool(unittest.TestCase):
         self.assertEqual(self.tool_ru.lang, "ru")
         self.assertEqual(self.tool_en.lang, "en")
         self.assertEqual(self.tool_ru.base_url, "https://ru.wikipedia.org/w/api.php")
+        self.assertIn("User-Agent", self.tool_ru.headers)
     
     def test_init_invalid_language(self):
         """Тест 2: Инициализация с недопустимым языком"""
@@ -56,6 +57,10 @@ class TestWikipediaTool(unittest.TestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0]["title"], "Python")
         self.assertIn("pageid", results[0])
+        # Проверяем, что requests.get вызван с headers
+        mock_get.assert_called_once()
+        args, kwargs = mock_get.call_args
+        self.assertIn("headers", kwargs)
     
     @patch('llm_agent.tools.wikipedia_tool.requests.get')
     def test_get_summary_success(self, mock_get):
@@ -78,6 +83,9 @@ class TestWikipediaTool(unittest.TestCase):
         self.assertIsInstance(summary, str)
         self.assertGreater(len(summary), 0)
         self.assertEqual(summary, "Python is a high-level programming language.")
+        # Проверяем headers
+        args, kwargs = mock_get.call_args
+        self.assertIn("headers", kwargs)
     
     @patch('llm_agent.tools.wikipedia_tool.requests.get')
     def test_execute_search_action(self, mock_get):
@@ -142,6 +150,12 @@ class TestWikipediaTool(unittest.TestCase):
         self.assertIn("summary", result)
         self.assertEqual(result["title"], "Python (programming language)")
         self.assertEqual(result["summary"], "Python is a programming language.")
+        
+        # Проверяем, что requests.get вызван дважды с headers
+        self.assertEqual(mock_get.call_count, 2)
+        for call in mock_get.call_args_list:
+            args, kwargs = call
+            self.assertIn("headers", kwargs)
 
 if __name__ == '__main__':
     unittest.main()

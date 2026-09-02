@@ -19,6 +19,9 @@ class WikipediaTool:
         self.base_url = f"https://{lang}.wikipedia.org/w/api.php"
         self.name = "wikipedia"
         self.description = "Поиск и извлечение информации из Wikipedia"
+        self.headers = {
+            "User-Agent": "WikipediaTool/1.0 (educational project; contact: student@example.com)"
+        }
     
     def get_tool_schema(self) -> Dict[str, Any]:
         """Возвращает схему инструмента для LLM"""
@@ -73,7 +76,7 @@ class WikipediaTool:
         }
         
         try:
-            response = requests.get(self.base_url, params=params, timeout=10)
+            response = requests.get(self.base_url, params=params, headers=self.headers, timeout=10)
             response.raise_for_status()
             data = response.json()
             
@@ -102,7 +105,7 @@ class WikipediaTool:
         }
         
         try:
-            response = requests.get(self.base_url, params=params, timeout=10)
+            response = requests.get(self.base_url, params=params, headers=self.headers, timeout=10)
             response.raise_for_status()
             data = response.json()
             

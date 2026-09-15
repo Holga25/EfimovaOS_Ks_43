@@ -1,0 +1,7 @@
+# 3_1_LLM_agent/requirements.txt
+requests
+python-decouple
+ddgs
+pytest
+pypdf
+pdfplumber

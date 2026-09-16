@@ -1,33 +1,28 @@
 import pytest
-#from unittest.mock import MagicMock, patch
 from llm_agent.core_v2 import LLMAgent
-
-# =====================================================================
-# ИНТЕГРАЦИОННЫЕ ТЕСТЫ (Запускают реальную Ollama / API)
-# =====================================================================
-# Маркируем как 'integration', чтобы их можно было отключать при быстрой проверке
 
 @pytest.mark.integration
 def test_calculator_query_live():
     """Реальный запуск агента для проверки математики."""
-    # Для тестов лучше использовать локальную модель, если она поднята
-    agent = LLMAgent(local=True, ollama_model="qwen3.5:0.8b")
+    agent = LLMAgent(local=True, ollama_model="qwen3:4b")
     query = "Сколько будет (5 + 3) * 2? Напиши только цифру."
-    
     response = agent.process_query(query)
-    
-    # Проверяем, что агент смог посчитать и выдать 16
     assert "16" in response
 
 
 @pytest.mark.integration
-def test_football_query_live():
-    """Реальный запуск агента для проверки поиска DuckDuckGo."""
-    agent = LLMAgent(local=True, ollama_model="qwen3.5:0.8b")
-    query = "Кто выиграл последний матч Спартак-Динамо?"
-    
+def test_wikipedia_query_live():
+    """Реальный запуск агента для проверки WikipediaTool на русском."""
+    agent = LLMAgent(local=True, ollama_model="qwen3:4b")
+    query = "Что такое нейронная сеть? Ответь кратко."
     response = agent.process_query(query)
-    
-    # Проверяем, что в реальном ответе фигурируют названия команд
-    assert "Спартак" in response or "Spartak" in response
-    assert "Динамо" in response or "Dynamo" in response
+    assert "нейрон" in response.lower() or "сеть" in response.lower()
+
+
+@pytest.mark.integration
+def test_wikipedia_english_live():
+    """Реальный запуск агента для проверки английской Wikipedia."""
+    agent = LLMAgent(local=True, ollama_model="qwen3:4b")
+    query = "What is machine learning? Answer briefly."
+    response = agent.process_query(query)
+    assert "machine learning" in response.lower() or "обучен" in response.lower()
